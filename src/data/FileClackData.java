@@ -1,5 +1,8 @@
 package data;
 
+import java.io.*;
+import java.util.Scanner;
+
 /**
  * The class MessageClackData is a subclass of ClackData and contains the following variables:
  * fileName - String representing name of file
@@ -57,10 +60,52 @@ public class FileClackData extends ClackData{
   }
 
   /**
-   * Does not return anything
-   * For now it should have no code, just a declaration
+   * Performs a non-secure file read
+   * Reads in the data from the file called fileName and writes it
+   * to the instance variable fileContents
+   * @throws IOException when opening, reading, and closing the file
    */
-  public void readFileContents(){}
+  public void readFileContents() throws IOException{
+    try {
+      File file = new File (fileName);
+      Scanner scanFile = new Scanner(file);
+      StringBuilder stringBuilder = new StringBuilder();
+      while(scanFile.hasNext()){
+        stringBuilder.append(scanFile.next());
+      }
+      fileContents = stringBuilder.toString();
+      scanFile.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
+
+  /**
+   * Performs a secure file read
+   * Reads in the data from the file called fileName, encrypts it,
+   * and writes it to the instance variable fileContents
+   * @param key for encrypting fileContents
+   * @throws IOException when opening, writing, and closing the file
+   */
+  public void readFileContents(String key) throws IOException{
+    try {
+      File file = new File (fileName);
+      Scanner scanFile = new Scanner(file);
+      StringBuilder stringBuilder = new StringBuilder();
+      while(scanFile.hasNext()){
+        stringBuilder.append(scanFile.next());
+      }
+      fileContents = stringBuilder.toString();
+      encrypt(fileContents, key);
+      scanFile.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
 
   /**
    * Does not return anything
