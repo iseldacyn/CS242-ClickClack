@@ -77,4 +77,17 @@ public abstract class ClackData {
    */
   public abstract String getData();
 
+  /**
+   *
+   * @return
+   */
+  protected String encrypt(String inputStringToEncrypt, String key){
+    int tempUnicodeVal = 0;
+    String EncryptedString = "";
+    for(int i = 0; i < inputStringToEncrypt.length(); i++){
+      tempUnicodeVal = int(inputStringToEncrypt.charAt(i)) + int(key.charAt(i%key.size()));
+
+    }
+  }
+
 }
