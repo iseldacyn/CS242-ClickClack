@@ -87,7 +87,7 @@ public class FileClackData extends ClackData{
    * Reads in the data from the file called fileName, encrypts it,
    * and writes it to the instance variable fileContents
    * @param key for encrypting fileContents
-   * @throws IOException when opening, writing, and closing the file
+   * @throws IOException when opening, reading, and closing the file
    */
   public void readFileContents(String key) throws IOException{
     try {
@@ -108,10 +108,41 @@ public class FileClackData extends ClackData{
   }
 
   /**
-   * Does not return anything
-   * For now it should have no code, just a declaration
+   * Performs a non-secure file write
+   * Writes the data from the instance variable fileContents to
+   * a file called fileName
    */
-  public void writeFileContents(){}
+  public void writeFileContents(){
+    try {
+      File file = new File(fileName);
+      BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(file) );
+      bufferedWriter.write(fileContents);
+      bufferedWriter.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
+
+  /**
+   * Performs a secure file write
+   * Writes the data from the instance variable fileContents to
+   * a file called fileName
+   * @param key for decrypting fileContents
+   */
+  public void writeFileContents(String key){
+    try {
+      File file = new File(fileName);
+      BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(file) );
+      bufferedWriter.write(decrypt(fileContents,key));
+      bufferedWriter.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
 
   @Override
   public int hashCode(){
