@@ -69,7 +69,7 @@ public class FileClackData extends ClackData{
     try {
       File file = new File (fileName);
       Scanner scanFile = new Scanner(file);
-      StringBuilder stringBuilder = new StringBuilder();
+      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
       while(scanFile.hasNext()){
         stringBuilder.append(scanFile.next());
       }
@@ -93,7 +93,7 @@ public class FileClackData extends ClackData{
     try {
       File file = new File (fileName);
       Scanner scanFile = new Scanner(file);
-      StringBuilder stringBuilder = new StringBuilder();
+      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
       while(scanFile.hasNext()){
         stringBuilder.append(scanFile.next());
       }

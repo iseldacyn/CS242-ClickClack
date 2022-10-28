@@ -84,5 +84,6 @@ public abstract class ClackData {
    * @return pass to subclasses
    */
   public abstract String getData();
+  public abstract String getData(String key);
 
 }

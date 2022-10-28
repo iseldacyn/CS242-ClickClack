@@ -1,6 +1,11 @@
 package main;
 
 import data.ClackData;
+import data.FileClackData;
+import data.MessageClackData;
+
+import java.io.*;
+import java.util.Scanner;
 
 /**
  * The ClackClient class contains the following variables:
@@ -10,11 +15,14 @@ import data.ClackData;
  * closeConnection - boolean representing whether connection is closed or not
  * dataToSendToServer - ClackData object representing data sent to server
  * dataToReceiveFromServer - ClackData object representing data received from the server
+ * inFromStd - Scanner object representing standard input
  */
 public class ClackClient{
   //default port number
   final static int DEFAULT_PORT = 7000;
+  final static String key = "follow me @xxiaie on twitter.com";
 
+  private Scanner inFromStd;
   private String userName;
   private String hostName;
   private int port;
@@ -30,6 +38,9 @@ public class ClackClient{
    * @param port sets the port to be connected to on the server
    */
   public ClackClient(String userName,String hostName,int port){
+    if(userName == null) throw new IllegalArgumentException("Username cannot be null");
+    if(hostName == null) throw new IllegalArgumentException("Hostname cannot be null");
+    if(port < 1024) throw new IllegalArgumentException("Port must be 1024 or greater");
     this.userName = userName;
     this.hostName = hostName;
     this.port = port;
@@ -63,16 +74,42 @@ public class ClackClient{
   }
 
   /**
-   * Does not return anything
-   * For now it should have no code, just a declaration
+   * Starts the connection, reads data from the client, and prints the data out.
    */
-  public void start(){}
+  public void start(){
+    inFromStd = new Scanner(System.in);
+    while(!closeConnection){
+      readClientData();
+      dataToReceiveFromServer = dataToSendToServer;
+      printData();
+    }
+  }
 
   /**
-   * Does not return anything
-   * For now it should have no code, just a declaration
+   * Reads the data from the client
    */
-  public void readClientData(){}
+  public void readClientData(){
+    String userInput = inFromStd.next();
+    if(userInput == "DONE"){
+      closeConnection = true;
+    } else if (userInput == "SENDFILE") {
+      String fileName = inFromStd.next();
+      dataToSendToServer = new FileClackData(userName, fileName, ClackData.CONSTANT_SENDFILE);
+      try{
+        File file = new File(fileName);
+        Scanner scanFile = new Scanner(file);
+        if(scanFile.hasNext()) scanFile.next();
+        scanFile.close();
+      } catch(IOException ioe) {
+        dataToSendToServer = null;
+        System.err.println("Error reading the file");
+      }
+    } else if (userInput == "LISTUSERS"){
+      System.err.println("Cannot test LISTUSERS");
+    } else {
+      dataToSendToServer = new MessageClackData(userName, "", ClackData.CONSTANT_SENDMESSAGE);
+    }
+  }
 
   /**
    * Does not return anything
@@ -93,10 +130,13 @@ public class ClackClient{
   public void receiveData(){}
 
   /**
-   * Does not return anything
-   * For now it should have no code, just a declaration
+   * Prints the received data to standard output
    */
-  public void printData(){}
+  public void printData(){
+    System.out.println("The username is: " + dataToReceiveFromServer.getUserName());
+    System.out.println("The data is: " + dataToReceiveFromServer.getData());
+    System.out.println("The data received is " + dataToReceiveFromServer.getData(key));
+  }
 
   /**
    * Returns the username
