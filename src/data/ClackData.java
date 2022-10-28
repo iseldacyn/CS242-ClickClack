@@ -87,7 +87,7 @@ public abstract class ClackData {
     StringBuilder Encrypted = new StringBuilder(inputStringToEncrypt.length());
     int tempUnicodeVal = 0;
     for(int i = 0; i < inputStringToEncrypt.length(); i++){
-      tempUnicodeVal = inputStringToEncrypt.charAt(i) + key.charAt(i%key.length())-1;
+      tempUnicodeVal = inputStringToEncrypt.charAt(i) + (key.charAt(i%key.length())-1);
       Encrypted.append((char)tempUnicodeVal);
     }
     return Encrypted.toString();
@@ -103,7 +103,7 @@ public abstract class ClackData {
     StringBuilder Decrypted = new StringBuilder(inputStringToDecrypt.length());
     int tempUnicodeVal = 0;
     for(int i = 0; i < inputStringToDecrypt.length(); i++){
-      tempUnicodeVal = inputStringToDecrypt.charAt(i) - key.charAt(i%key.length())-1;
+      tempUnicodeVal = inputStringToDecrypt.charAt(i) - (key.charAt(i%key.length())-1);
       Decrypted.append((char)tempUnicodeVal);
     }
     return Decrypted.toString();
