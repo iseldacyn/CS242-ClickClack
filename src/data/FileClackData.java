@@ -1,5 +1,8 @@
 package data;
 
+import java.io.*;
+import java.util.Scanner;
+
 /**
  * The class MessageClackData is a subclass of ClackData and contains the following variables:
  * fileName - String representing name of file
@@ -66,16 +69,89 @@ public class FileClackData extends ClackData{
   }
 
   /**
-   * Does not return anything
-   * For now it should have no code, just a declaration
+   * Performs a non-secure file read
+   * Reads in the data from the file called fileName and writes it
+   * to the instance variable fileContents
+   * @throws IOException when opening, reading, and closing the file
    */
-  public void readFileContents(){}
+  public void readFileContents() throws IOException{
+    try {
+      File file = new File (fileName);
+      Scanner scanFile = new Scanner(file);
+      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
+      while(scanFile.hasNext()){
+        stringBuilder.append(scanFile.next());
+      }
+      fileContents = stringBuilder.toString();
+      scanFile.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
 
   /**
-   * Does not return anything
-   * For now it should have no code, just a declaration
+   * Performs a secure file read
+   * Reads in the data from the file called fileName, encrypts it,
+   * and writes it to the instance variable fileContents
+   * @param key for encrypting fileContents
+   * @throws IOException when opening, reading, and closing the file
    */
-  public void writeFileContents(){}
+  public void readFileContents(String key) throws IOException{
+    try {
+      File file = new File (fileName);
+      Scanner scanFile = new Scanner(file);
+      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
+      while(scanFile.hasNext()){
+        stringBuilder.append(scanFile.next());
+      }
+      fileContents = stringBuilder.toString();
+      encrypt(fileContents, key);
+      scanFile.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
+
+  /**
+   * Performs a non-secure file write
+   * Writes the data from the instance variable fileContents to
+   * a file called fileName
+   */
+  public void writeFileContents(){
+    try {
+      File file = new File(fileName);
+      BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(file) );
+      bufferedWriter.write(fileContents);
+      bufferedWriter.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
+
+  /**
+   * Performs a secure file write
+   * Writes the data from the instance variable fileContents to
+   * a file called fileName
+   * @param key for decrypting fileContents
+   */
+  public void writeFileContents(String key){
+    try {
+      File file = new File(fileName);
+      BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(file) );
+      bufferedWriter.write(decrypt(fileContents,key));
+      bufferedWriter.close();
+    } catch(FileNotFoundException fnfe) {
+      System.err.println("The file " + fileName + " does not exist");
+    } catch(IOException ioe) {
+      System.err.println("Error in reading or closing the file " + fileName);
+    }
+  }
 
   @Override
   public int hashCode(){

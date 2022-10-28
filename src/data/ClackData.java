@@ -76,6 +76,7 @@ public abstract class ClackData {
    * @return pass to subclasses
    */
   public abstract String getData();
+  public abstract String getData(String key);
 
   /**
    * Protected method that encrypts a string using the Vignère Cypher then returns it
