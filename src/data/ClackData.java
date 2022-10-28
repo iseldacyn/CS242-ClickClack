@@ -77,4 +77,35 @@ public abstract class ClackData {
    */
   public abstract String getData();
 
+  /**
+   * Protected method that encrypts a string using the Vignère Cypher then returns it
+   * @param inputStringToEncrypt The string to be Encrypted
+   * @param key the encryption/decryption key
+   * @return The encrypted string
+   */
+  protected String encrypt(String inputStringToEncrypt, String key){
+    StringBuilder Encrypted = new StringBuilder(inputStringToEncrypt.length());
+    int tempUnicodeVal = 0;
+    for(int i = 0; i < inputStringToEncrypt.length(); i++){
+      tempUnicodeVal = inputStringToEncrypt.charAt(i) + (key.charAt(i%key.length())-1);
+      Encrypted.append((char)tempUnicodeVal);
+    }
+    return Encrypted.toString();
+  }
+
+  /**
+   * this method decrypts the encrypted string and returns it
+   * @param inputStringToDecrypt the string that is to be Decrypted
+   * @param key the encryption/decryption key
+   * @return The decrypted string
+   */
+  protected String decrypt(String inputStringToDecrypt, String key){
+    StringBuilder Decrypted = new StringBuilder(inputStringToDecrypt.length());
+    int tempUnicodeVal = 0;
+    for(int i = 0; i < inputStringToDecrypt.length(); i++){
+      tempUnicodeVal = inputStringToDecrypt.charAt(i) - (key.charAt(i%key.length())-1);
+      Decrypted.append((char)tempUnicodeVal);
+    }
+    return Decrypted.toString();
+  }
 }

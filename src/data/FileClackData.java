@@ -57,6 +57,15 @@ public class FileClackData extends ClackData{
   }
 
   /**
+   * overloaded here to return decrypted file contents
+   * @param key the decryption key used to decrypt file contents
+   * @return the decrypted file contents
+   */
+  public String getData(String key){
+    return decrypt(this.fileContents, key);
+  }
+
+  /**
    * Does not return anything
    * For now it should have no code, just a declaration
    */

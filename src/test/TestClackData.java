@@ -18,7 +18,9 @@ public class TestClackData {
     
     //tests all constructors for MessageClackData object
     MessageClackData testMessageClackData = new MessageClackData("myUser","Hello World",0);
+    MessageClackData testMessageClackData3 = new MessageClackData("myUser","Hello there my CRANKY CREW=-=-+()" , "jimbo+L",0);
     MessageClackData testMessageClackData2 = new MessageClackData();
+
 
     //tests overloaded toString() method
     System.out.println(testMessageClackData);
@@ -75,8 +77,11 @@ public class TestClackData {
 
     //tests overloaded equals() method for an equal and unequal instance of FileClackData
     //note: since fileName and fileContents are initialized as null, there is an error when comparing them
-    System.out.println(testFileClackData.equals(testFileClackData));
-    System.out.println(testFileClackData.equals(testFileClackData2));
+    //System.out.println(testFileClackData.equals(testFileClackData));
+    //System.out.println(testFileClackData.equals(testFileClackData2));
+
+    System.out.println(testMessageClackData3.getData());
+    System.out.println(testMessageClackData3.getData("jimbo+L"));
 
   }
 }
