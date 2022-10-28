@@ -60,6 +60,15 @@ public class FileClackData extends ClackData{
   }
 
   /**
+   * overloaded here to return decrypted file contents
+   * @param key the decryption key used to decrypt file contents
+   * @return the decrypted file contents
+   */
+  public String getData(String key){
+    return decrypt(this.fileContents, key);
+  }
+
+  /**
    * Performs a non-secure file read
    * Reads in the data from the file called fileName and writes it
    * to the instance variable fileContents

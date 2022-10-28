@@ -29,6 +29,18 @@ public class MessageClackData extends ClackData{
   }
 
   /**
+   * Constructor to set up username, an encrypted message and type
+   * @param userName sets the username of the user
+   * @param message sets the instant message of the user
+   * @param key is used in the encryption of the file
+   * @param type sets what kind of data exchange between client and server
+   */
+  public MessageClackData(String userName,String message, String key, int type){
+    super(userName,type);
+    this.message = encrypt(message, key);
+  }
+
+  /**
    * Implemented here to return instant message
    * @return the instant message of the user
    */
@@ -36,6 +48,15 @@ public class MessageClackData extends ClackData{
     return this.message;
   }
 
+
+  /**
+   * Overloaded here to return a decrypted message
+   * @param key is used in the decryption of the file
+   * @return the decrypted instant message of the user
+   */
+  public String getData(String key){
+    return decrypt(this.message, key);
+  }
   @Override
   public int hashCode(){
     return this.toString().hashCode();

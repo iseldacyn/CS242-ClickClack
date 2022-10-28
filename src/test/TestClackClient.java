@@ -44,6 +44,8 @@ public class TestClackClient {
     System.out.println(testClackClient.equals(testClackClient));
     System.out.println(testClackClient.equals(testClackClient2));
 
+
+
   }
 
 }
