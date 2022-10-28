@@ -96,10 +96,7 @@ public class ClackClient{
       String fileName = inFromStd.next();
       dataToSendToServer = new FileClackData(userName, fileName, ClackData.CONSTANT_SENDFILE);
       try{
-        File file = new File(fileName);
-        Scanner scanFile = new Scanner(file);
-        if(scanFile.hasNext()) scanFile.next();
-        scanFile.close();
+        ((FileClackData)dataToSendToServer).readFileContents();
       } catch(IOException ioe) {
         dataToSendToServer = null;
         System.err.println("Error reading the file");
@@ -107,7 +104,7 @@ public class ClackClient{
     } else if (userInput.equals("LISTUSERS")){
       System.err.println("Cannot test LISTUSERS");
     } else {
-      dataToSendToServer = new MessageClackData(userName, "", ClackData.CONSTANT_SENDMESSAGE);
+      dataToSendToServer = new MessageClackData(userName, "", key, ClackData.CONSTANT_SENDMESSAGE);
     }
   }
 

@@ -44,10 +44,7 @@ public class MessageClackData extends ClackData{
    * Implemented here to return instant message
    * @return the instant message of the user
    */
-  public String getData(){
-    return this.message;
-  }
-
+  public String getData(){ return this.message; }
 
   /**
    * Overloaded here to return a decrypted message
@@ -57,6 +54,7 @@ public class MessageClackData extends ClackData{
   public String getData(String key){
     return decrypt(this.message, key);
   }
+
   @Override
   public int hashCode(){
     return this.toString().hashCode();
