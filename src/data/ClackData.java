@@ -71,14 +71,6 @@ public abstract class ClackData {
     return this.date;
   }
 
-  protected String encrypt( String inputStringToEncrypt, String key ){
-    return "";
-  }
-
-  protected String decrypt( String inputStringToDecrypt, String key ){
-    return "";
-  }
-
   /**
    * Abstract method to return the data contained in this class (contents of instant message or contents of a file)
    * @return pass to subclasses
