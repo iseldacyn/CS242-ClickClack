@@ -1,3 +1,5 @@
+Sydney DeCyllis, Iselda Aiello
+
 ClackClient command line output:
 
 (--constructor 1--)
