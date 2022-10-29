@@ -77,34 +77,36 @@ public class ClackClient{
    * Starts the connection, reads data from the client, and prints the data out.
    */
   public void start(){
-    inFromStd = new Scanner(System.in);
-    while(!closeConnection){
+    this.inFromStd = new Scanner(System.in);
+    while(!this.closeConnection){
       readClientData();
-      dataToReceiveFromServer = dataToSendToServer;
+      this.dataToReceiveFromServer = this.dataToSendToServer;
       printData();
     }
+    //this.inFromStd.close();
   }
 
   /**
    * Reads the data from the client
    */
   public void readClientData(){
-    String userInput = inFromStd.next();
+    String userInput = this.inFromStd.next();
     if(userInput.equals("DONE")){
-      closeConnection = true;
+      this.closeConnection = true;
     } else if (userInput.equals("SENDFILE")) {
-      String fileName = inFromStd.next();
-      dataToSendToServer = new FileClackData(userName, fileName, ClackData.CONSTANT_SENDFILE);
+      String fileName = this.inFromStd.next();
+      this.dataToSendToServer = new FileClackData(this.userName, fileName, ClackData.CONSTANT_SENDFILE);
       try{
-        ((FileClackData)dataToSendToServer).readFileContents();
+        ((FileClackData) this.dataToSendToServer).readFileContents(key);
       } catch(IOException ioe) {
-        dataToSendToServer = null;
+        this.dataToSendToServer = null;
         System.err.println("Error reading the file");
       }
     } else if (userInput.equals("LISTUSERS")){
       System.err.println("Cannot test LISTUSERS");
+      System.exit(0);
     } else {
-      dataToSendToServer = new MessageClackData(userName, "", key, ClackData.CONSTANT_SENDMESSAGE);
+      this.dataToSendToServer = new MessageClackData(this.userName,"test",key,ClackData.CONSTANT_SENDMESSAGE);
     }
   }
 
@@ -130,9 +132,9 @@ public class ClackClient{
    * Prints the received data to standard output
    */
   public void printData(){
-    System.out.println("The username is: " + dataToReceiveFromServer.getUserName());
-    System.out.println("The data is: " + dataToReceiveFromServer.getData());
-    System.out.println("The data received is " + dataToReceiveFromServer.getData(key));
+    System.out.println("The username is: " + this.dataToReceiveFromServer.getUserName());
+    System.out.println("The date is: " + this.dataToReceiveFromServer.getDate());
+    System.out.println("The data received is: \"" + this.dataToReceiveFromServer.getData(key) + "\"");
   }
 
   /**

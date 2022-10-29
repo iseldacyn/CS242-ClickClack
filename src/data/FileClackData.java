@@ -1,7 +1,6 @@
 package data;
 
 import java.io.*;
-import java.util.Scanner;
 
 /**
  * The class MessageClackData is a subclass of ClackData and contains the following variables:
@@ -78,12 +77,15 @@ public class FileClackData extends ClackData{
     try {
       File file = new File (this.fileName);
       BufferedReader bufferedReader = new BufferedReader( new FileReader(file) );
-      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
-      String nextLine;
-      while( (nextLine = bufferedReader.readLine()) != null) {
+      StringBuilder stringBuilder = new StringBuilder(500);
+      String nextLine = bufferedReader.readLine();
+      while(nextLine != null) {
         stringBuilder.append(nextLine);
+        if ((nextLine = bufferedReader.readLine()) != null) {
+          stringBuilder.append(System.getProperty("line.separator"));
+        }
       }
-      fileContents = stringBuilder.toString();
+      this.fileContents = stringBuilder.toString();
       bufferedReader.close();
     } catch(FileNotFoundException fnfe) {
       System.err.println("The file " + this.fileName + " does not exist");
@@ -103,13 +105,16 @@ public class FileClackData extends ClackData{
     try {
       File file = new File (this.fileName);
       BufferedReader bufferedReader = new BufferedReader( new FileReader(file) );
-      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
-      String nextLine;
-      while( (nextLine = bufferedReader.readLine()) != null){
+      StringBuilder stringBuilder = new StringBuilder(500);
+      String nextLine = bufferedReader.readLine();
+      while(nextLine != null){
         stringBuilder.append(nextLine);
+        if( (nextLine = bufferedReader.readLine()) != null) {
+          stringBuilder.append(System.getProperty("line.separator"));
+        }
       }
-      fileContents = stringBuilder.toString();
-      encrypt(fileContents, key);
+      this.fileContents = stringBuilder.toString();
+      this.fileContents = encrypt(this.fileContents, key);
       bufferedReader.close();
     } catch(FileNotFoundException fnfe) {
       System.err.println("The file " + this.fileName + " does not exist");

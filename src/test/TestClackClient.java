@@ -41,10 +41,19 @@ public class TestClackClient {
     //tests overloaded equals() method for an equal and unequal instance of ClackClient
     //note: since dataToSendToServer and dataToReceiveFromServer are initialized as null,
     // there is an error when comparing them
-    System.out.println(testClackClient.equals(testClackClient));
-    System.out.println(testClackClient.equals(testClackClient2));
+    //System.out.println(testClackClient.equals(testClackClient));
+    //System.out.println(testClackClient.equals(testClackClient2));
 
+    //tests InvalidArgumentException for ClackClient
+    //ClackClient testClackClient5 = new ClackClient(null);
+    //ClackClient testClackClient5 = new ClackClient("myUser",null);
+    //ClackClient testClackClient5 = new ClackClient("myUser","myHost",1000);
 
+    //tests start() on all constructors
+    testClackClient.start();
+    testClackClient2.start();
+    testClackClient3.start();
+    testClackClient4.start();
 
   }
 

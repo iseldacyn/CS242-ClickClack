@@ -3,6 +3,8 @@ package test;
 import data.MessageClackData;
 import data.FileClackData;
 
+import java.io.IOException;
+
 /**
  * The TestClackData class runs the main function
  * @author Iselda Aiello
@@ -18,7 +20,8 @@ public class TestClackData {
     
     //tests all constructors for MessageClackData object
     MessageClackData testMessageClackData = new MessageClackData("myUser","Hello World",0);
-    MessageClackData testMessageClackData3 = new MessageClackData("myUser","Hello there my CRANKY CREW=-=-+()" , "jimbo+L",0);
+    MessageClackData testMessageClackData3 = new MessageClackData("myUser",
+            "Hello there my CRANKY CREW=-=-+()" , "jimbo+L",0);
     MessageClackData testMessageClackData2 = new MessageClackData();
 
 
@@ -46,7 +49,7 @@ public class TestClackData {
     System.out.println(testMessageClackData.equals(testMessageClackData2));
     
     //tests all constructors for FileClackData object
-    FileClackData testFileClackData = new FileClackData("myUser","Old File",0);
+    FileClackData testFileClackData = new FileClackData("myUser","test2.txt",0);
     FileClackData testFileClackData2 = new FileClackData();
 
     //tests overloaded toString() method
@@ -66,7 +69,7 @@ public class TestClackData {
     System.out.println(testFileClackData.getFileName());
 
     //tests setFileName() method and ensures the fileName is changed
-    testFileClackData.setFileName("New File");
+    testFileClackData.setFileName("test1.txt");
     System.out.println(testFileClackData.getFileName());
 
     //tests getData() method implementation
@@ -80,8 +83,24 @@ public class TestClackData {
     //System.out.println(testFileClackData.equals(testFileClackData));
     //System.out.println(testFileClackData.equals(testFileClackData2));
 
+    //tests getData() to ensure the message is encrypted/decrypted properly
     System.out.println(testMessageClackData3.getData());
     System.out.println(testMessageClackData3.getData("jimbo+L"));
+
+    //tests readFileContents and writeFileContents
+    try {
+      testFileClackData.readFileContents();
+      System.out.println(testFileClackData.getData());
+      testFileClackData.readFileContents("jimbo+L");
+      System.out.println(testFileClackData.getData());
+      testFileClackData.setFileName("test2.txt");
+      testFileClackData.writeFileContents("jimbo+L");
+      testFileClackData.readFileContents();
+      System.out.println(testFileClackData.getData());
+      testFileClackData.writeFileContents();
+    } catch(IOException ioe) {
+      System.out.println("Error");
+    }
 
   }
 }
