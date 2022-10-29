@@ -1,7 +1,6 @@
 package data;
 
 import java.io.*;
-import java.util.Scanner;
 
 /**
  * The class MessageClackData is a subclass of ClackData and contains the following variables:
@@ -76,18 +75,22 @@ public class FileClackData extends ClackData{
    */
   public void readFileContents() throws IOException{
     try {
-      File file = new File (fileName);
-      Scanner scanFile = new Scanner(file);
-      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
-      while(scanFile.hasNext()){
-        stringBuilder.append(scanFile.next());
+      File file = new File (this.fileName);
+      BufferedReader bufferedReader = new BufferedReader( new FileReader(file) );
+      StringBuilder stringBuilder = new StringBuilder(500);
+      String nextLine = bufferedReader.readLine();
+      while(nextLine != null) {
+        stringBuilder.append(nextLine);
+        if ((nextLine = bufferedReader.readLine()) != null) {
+          stringBuilder.append(System.getProperty("line.separator"));
+        }
       }
-      fileContents = stringBuilder.toString();
-      scanFile.close();
+      this.fileContents = stringBuilder.toString();
+      bufferedReader.close();
     } catch(FileNotFoundException fnfe) {
-      System.err.println("The file " + fileName + " does not exist");
+      System.err.println("The file " + this.fileName + " does not exist");
     } catch(IOException ioe) {
-      System.err.println("Error in reading or closing the file " + fileName);
+      System.err.println("Error in reading or closing the file " + this.fileName);
     }
   }
 
@@ -100,19 +103,23 @@ public class FileClackData extends ClackData{
    */
   public void readFileContents(String key) throws IOException{
     try {
-      File file = new File (fileName);
-      Scanner scanFile = new Scanner(file);
-      StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
-      while(scanFile.hasNext()){
-        stringBuilder.append(scanFile.next());
+      File file = new File (this.fileName);
+      BufferedReader bufferedReader = new BufferedReader( new FileReader(file) );
+      StringBuilder stringBuilder = new StringBuilder(500);
+      String nextLine = bufferedReader.readLine();
+      while(nextLine != null){
+        stringBuilder.append(nextLine);
+        if( (nextLine = bufferedReader.readLine()) != null) {
+          stringBuilder.append(System.getProperty("line.separator"));
+        }
       }
-      fileContents = stringBuilder.toString();
-      encrypt(fileContents, key);
-      scanFile.close();
+      this.fileContents = stringBuilder.toString();
+      this.fileContents = encrypt(this.fileContents, key);
+      bufferedReader.close();
     } catch(FileNotFoundException fnfe) {
-      System.err.println("The file " + fileName + " does not exist");
+      System.err.println("The file " + this.fileName + " does not exist");
     } catch(IOException ioe) {
-      System.err.println("Error in reading or closing the file " + fileName);
+      System.err.println("Error in reading or closing the file " + this.fileName);
     }
   }
 
@@ -123,14 +130,14 @@ public class FileClackData extends ClackData{
    */
   public void writeFileContents(){
     try {
-      File file = new File(fileName);
+      File file = new File(this.fileName);
       BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(file) );
-      bufferedWriter.write(fileContents);
+      bufferedWriter.write(this.fileContents);
       bufferedWriter.close();
     } catch(FileNotFoundException fnfe) {
-      System.err.println("The file " + fileName + " does not exist");
+      System.err.println("The file " + this.fileName + " does not exist");
     } catch(IOException ioe) {
-      System.err.println("Error in reading or closing the file " + fileName);
+      System.err.println("Error in reading or closing the file " + this.fileName);
     }
   }
 
@@ -142,14 +149,14 @@ public class FileClackData extends ClackData{
    */
   public void writeFileContents(String key){
     try {
-      File file = new File(fileName);
+      File file = new File(this.fileName);
       BufferedWriter bufferedWriter = new BufferedWriter( new FileWriter(file) );
-      bufferedWriter.write(decrypt(fileContents,key));
+      bufferedWriter.write(decrypt(this.fileContents,key));
       bufferedWriter.close();
     } catch(FileNotFoundException fnfe) {
-      System.err.println("The file " + fileName + " does not exist");
+      System.err.println("The file " + this.fileName + " does not exist");
     } catch(IOException ioe) {
-      System.err.println("Error in reading or closing the file " + fileName);
+      System.err.println("Error in reading or closing the file " + this.fileName);
     }
   }
 

@@ -72,17 +72,10 @@ public abstract class ClackData {
   }
 
   /**
-   * Abstract method to return the data contained in this class (contents of instant message or contents of a file)
-   * @return pass to subclasses
-   */
-  public abstract String getData();
-  public abstract String getData(String key);
-
-  /**
    * Protected method that encrypts a string using the Vignère Cypher then returns it
    * @param inputStringToEncrypt The string to be Encrypted
    * @param key the encryption/decryption key
-   * @return The encrypted string
+   * @return the encrypted string
    */
   protected String encrypt(String inputStringToEncrypt, String key){
     StringBuilder Encrypted = new StringBuilder(inputStringToEncrypt.length());
@@ -95,10 +88,10 @@ public abstract class ClackData {
   }
 
   /**
-   * this method decrypts the encrypted string and returns it
+   * This method decrypts the encrypted string and returns it
    * @param inputStringToDecrypt the string that is to be Decrypted
    * @param key the encryption/decryption key
-   * @return The decrypted string
+   * @return the decrypted string
    */
   protected String decrypt(String inputStringToDecrypt, String key){
     StringBuilder Decrypted = new StringBuilder(inputStringToDecrypt.length());
@@ -109,4 +102,18 @@ public abstract class ClackData {
     }
     return Decrypted.toString();
   }
+
+  /**
+   * Abstract method to return the data contained in this class (contents of instant message or contents of a file)
+   * @return pass to subclasses
+   */
+  public abstract String getData();
+
+  /**
+   * Abstract method to return the data contained in this class (contents of instant message or contents of a file)
+   * @param key to decrypt the data
+   * @return pass to subclass
+   */
+  public abstract String getData(String key);
+
 }
