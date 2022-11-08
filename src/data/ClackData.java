@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Date;
  * date - Date object representing date when ClackData object was created
  * @author Iselda Aiello
  */
-public abstract class ClackData {
+public abstract class ClackData implements Serializable {
 
   //int variables for the different values of "type" 
   public static final int CONSTANT_LISTUSERS = 0;
