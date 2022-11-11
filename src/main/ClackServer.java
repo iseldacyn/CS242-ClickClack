@@ -142,7 +142,7 @@ public class ClackServer{
   public static void main(String[] args){
     ClackServer clackServer;
     try{
-      if(args == null)
+      if(args.length == 0)
         clackServer = new ClackServer();
       else clackServer = new ClackServer( Integer.parseInt(args[0]) );
       clackServer.start();
