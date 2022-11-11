@@ -3,6 +3,7 @@ package main;
 import data.ClackData;
 import java.io.*;
 import java.net.*;
+import java.util.InputMismatchException;
 
 /**
  * The ClackServer class contains the following variables:
@@ -132,6 +133,22 @@ public class ClackServer{
     String connection = closeConnection ? "closed" : "open";
     return "The port number is: " + this.port + "\n" +
             "The connection is " + connection;
+  }
+
+  /**
+   * Initializes a ClackServer object and connects to a client
+   * @param args command line arguments
+   */
+  public static void main(String[] args){
+    ClackServer clackServer;
+    try{
+      if(args == null)
+        clackServer = new ClackServer();
+      else clackServer = new ClackServer( Integer.parseInt(args[0]) );
+      clackServer.start();
+    } catch (InputMismatchException ime){
+      System.err.println("Expected type int");
+    }
   }
 
 }
