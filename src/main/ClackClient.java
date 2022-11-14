@@ -37,7 +37,6 @@ public class ClackClient{
   private ClackData dataToReceiveFromServer;
   private ObjectInputStream inFromServer;
   private ObjectOutputStream outToServer;
-  private Socket local;
 
   /**
    * Constructor for username, host name, and port, connection should be set to be open <br>
@@ -90,7 +89,7 @@ public class ClackClient{
   public void start(){
 
     try {
-      local = new Socket(hostName, port);
+      Socket local = new Socket(hostName, port);
       local.setSoTimeout(400000);
 
       outToServer = new ObjectOutputStream(local.getOutputStream());
