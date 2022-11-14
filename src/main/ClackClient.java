@@ -4,7 +4,10 @@ import data.ClackData;
 import data.FileClackData;
 import data.MessageClackData;
 
+
 import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 /**
@@ -29,6 +32,9 @@ public class ClackClient{
   private boolean closeConnection;
   private ClackData dataToSendToServer;
   private ClackData dataToReceiveFromServer;
+  private ObjectInputStream inFromServer;
+  private ObjectOutputStream outToServer;
+  private Socket local;
 
   /**
    * Constructor for username, host name, and port, connection should be set to be open
@@ -47,6 +53,8 @@ public class ClackClient{
     this.closeConnection = false;
     this.dataToSendToServer = null;
     this.dataToReceiveFromServer = null;
+    this.outToServer = null;
+    this.inFromServer = null;
   }
 
   /**
@@ -77,11 +85,33 @@ public class ClackClient{
    * Starts the connection, reads data from the client, and prints the data out.
    */
   public void start(){
-    this.inFromStd = new Scanner(System.in);
-    while(!this.closeConnection){
-      readClientData();
-      this.dataToReceiveFromServer = this.dataToSendToServer;
-      printData();
+
+    try {
+      local = new Socket(hostName, port);
+      local.setSoTimeout(400000);
+
+      outToServer = new ObjectOutputStream(local.getOutputStream());
+      inFromServer = new ObjectInputStream(local.getInputStream());
+
+      //Reads user input into inFromStd
+      this.inFromStd = new Scanner(System.in);
+      while(!this.closeConnection){
+        readClientData();
+        this.dataToReceiveFromServer = this.dataToSendToServer;
+        sendData();
+        receiveData();
+        printData();
+      }
+      local.close();
+      outToServer.close();
+      inFromServer.close();
+      inFromStd.close();
+    }
+    catch(UnknownHostException uhe){
+      System.out.println("Unknown host Exception");
+    }
+    catch(IOException ioe){
+      System.out.println("IOException");
     }
     //this.inFromStd.close();
   }
@@ -93,6 +123,7 @@ public class ClackClient{
     String userInput = this.inFromStd.next();
     if(userInput.equals("DONE")){
       this.closeConnection = true;
+      this.dataToSendToServer = new MessageClackData(this.userName,userInput,ClackData.CONSTANT_SENDMESSAGE);
     } else if (userInput.equals("SENDFILE")) {
       String fileName = this.inFromStd.next();
       this.dataToSendToServer = new FileClackData(this.userName, fileName, ClackData.CONSTANT_SENDFILE);
@@ -106,7 +137,7 @@ public class ClackClient{
       System.err.println("Cannot test LISTUSERS");
       System.exit(0);
     } else {
-      this.dataToSendToServer = new MessageClackData(this.userName,"test",key,ClackData.CONSTANT_SENDMESSAGE);
+      this.dataToSendToServer = new MessageClackData(this.userName,userInput,key,ClackData.CONSTANT_SENDMESSAGE);
     }
   }
 
@@ -120,13 +151,33 @@ public class ClackClient{
    * Does not return anything
    * For now it should have no code, just a declaration
    */
-  public void sendData(){}
+  public void sendData(){
+    try{
+      outToServer.writeObject(dataToSendToServer);
+    }
+    catch(IOException ioe){
+      System.err.println("ObjectInputStream Exception");
+    }
+
+
+  }
 
   /**
    * Does not return anything
    * For now it should have no code, just a declaration
    */
-  public void receiveData(){}
+  public void receiveData(){
+    try{
+      dataToReceiveFromServer = (ClackData) inFromServer.readObject();
+    }
+    catch(ClassNotFoundException cfe){
+      System.err.println("Class could not be found");
+    }
+    catch(IOException ioe){
+      System.err.println("ObjectInputStream Exception");
+    }
+
+  }
 
   /**
    * Prints the received data to standard output
@@ -185,6 +236,29 @@ public class ClackClient{
             "The hostname is: " + this.hostName + "\n" +
             "The port number is: " + this.port + "\n" +
             "The connection is " + connection;
+  }
+  public static void main(String []args){
+    String parse;
+    ClackClient clackClient;
+
+
+    if(args.length == 0){
+      parse = "";
+    }
+    else{
+      parse = args[0];
+    }
+    if(parse.contains("@")){
+      String[] title = parse.split("@");
+      parse = title[0];
+      if(title[1].contains(":")) {
+        title = title[1].split(":");
+        clackClient = new ClackClient(parse, title[0], Integer.parseInt(title[1]));
+        System.out.println(parse + title[0] + title[1]);
+        clackClient.start();
+      }
+    }
+
   }
 
 }
