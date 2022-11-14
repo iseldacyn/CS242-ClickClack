@@ -244,21 +244,27 @@ public class ClackClient{
 
     if(args.length == 0){
       parse = "";
+      clackClient = new ClackClient();
     }
-    else{
+    else {
       parse = args[0];
-    }
-    if(parse.contains("@")){
-      String[] title = parse.split("@");
-      parse = title[0];
-      if(title[1].contains(":")) {
-        title = title[1].split(":");
-        clackClient = new ClackClient(parse, title[0], Integer.parseInt(title[1]));
-        System.out.println(parse + title[0] + title[1]);
-        clackClient.start();
+
+      if (parse.contains("@")) {
+        String[] title = parse.split("@");
+        parse = title[0];
+        if (title[1].contains(":")) {
+          title = title[1].split(":");
+          clackClient = new ClackClient(parse, title[0], Integer.parseInt(title[1]));
+
+        } else {
+          clackClient = new ClackClient(parse, title[0]);
+        }
+      }
+      else{
+        clackClient = new ClackClient(parse);
       }
     }
-
+    clackClient.start();
   }
 
 }
