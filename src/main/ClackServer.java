@@ -1,6 +1,8 @@
 package main;
 
 import data.ClackData;
+import data.MessageClackData;
+import data.FileClackData;
 import java.io.*;
 import java.net.*;
 import java.util.InputMismatchException;
@@ -56,6 +58,7 @@ public class ClackServer{
     try {
       ServerSocket sskt = new ServerSocket(this.port);
       Socket clientskt = sskt.accept();
+      System.out.println("Connection Established!");
       this.inFromClient = new ObjectInputStream( clientskt.getInputStream() );
       this.outToClient = new ObjectOutputStream( clientskt.getOutputStream() );
       while(!this.closeConnection){
@@ -85,12 +88,15 @@ public class ClackServer{
     try{
       this.dataToReceiveFromClient = (ClackData)this.inFromClient.readObject();
       System.out.println( this.dataToReceiveFromClient );
-      if( this.dataToReceiveFromClient.getData().equals("DONE") )
+      if( this.dataToReceiveFromClient.getData().equals("DONE") ) {
         this.closeConnection = true;
+        System.out.println("Connection Closed!");
+      }
     } catch (ClassNotFoundException cnfe) {
       System.err.println("Class not found");
     } catch(IOException ioe) {
-      System.err.println("IO exception occurred");
+      this.closeConnection = true;
+      System.err.println("IO exception occurred" + ioe);
     }
   }
 
