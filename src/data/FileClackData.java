@@ -4,9 +4,11 @@ import java.io.*;
 
 /**
  * The class MessageClackData is a subclass of ClackData and contains the following variables:
- * fileName - String representing name of file
- * fileContents - String representing contents of file
- * @author Iselda Aiello
+ * <ul>
+ * <li>fileName - String representing name of file</li>
+ * <li>fileContents - String representing contents of file</li>
+ * </ul>
+ * @author Iselda Aiello, Sydney DeCyllis
  */
 public class FileClackData extends ClackData{
 
@@ -68,7 +70,7 @@ public class FileClackData extends ClackData{
   }
 
   /**
-   * Performs a non-secure file read
+   * Performs a non-secure file read<br>
    * Reads in the data from the file called fileName and writes it
    * to the instance variable fileContents
    * @throws IOException when opening, reading, and closing the file
@@ -95,7 +97,7 @@ public class FileClackData extends ClackData{
   }
 
   /**
-   * Performs a secure file read
+   * Performs a secure file read<br>
    * Reads in the data from the file called fileName, encrypts it,
    * and writes it to the instance variable fileContents
    * @param key for encrypting fileContents
@@ -124,7 +126,7 @@ public class FileClackData extends ClackData{
   }
 
   /**
-   * Performs a non-secure file write
+   * Performs a non-secure file write<br>
    * Writes the data from the instance variable fileContents to
    * a file called fileName
    */
@@ -142,7 +144,7 @@ public class FileClackData extends ClackData{
   }
 
   /**
-   * Performs a secure file write
+   * Performs a secure file write<br>
    * Writes the data from the instance variable fileContents to
    * a file called fileName
    * @param key for decrypting fileContents

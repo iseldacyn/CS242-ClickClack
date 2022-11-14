@@ -12,7 +12,7 @@ import java.io.IOException;
 public class TestClackData {
 
   /**
-   * The main function tests the methods and constructors of the ClackData class
+   * The main function tests the methods and constructors of the ClackData class<br>
    * The MessageClackData and FileClackData subclasses of ClackData are tested in main
    * @param args command line arguments
    */

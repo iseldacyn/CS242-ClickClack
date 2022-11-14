@@ -5,10 +5,12 @@ import java.util.Date;
 
 /**
  * The abstract class ClackData contains the following variables:
- * username - String representing name of client user
- * type - An integer, refer to section labeled About the type variable
- * date - Date object representing date when ClackData object was created
- * @author Iselda Aiello
+ * <ul>
+ * <li>username - String representing name of client user</li>
+ * <li>type - An integer, refer to section labeled About the type variable</li>
+ * <li>date - Date object representing date when ClackData object was created</li>
+ * </ul>
+ * @author Iselda Aiello, Sydney DeCyllis
  */
 public abstract class ClackData implements Serializable {
 

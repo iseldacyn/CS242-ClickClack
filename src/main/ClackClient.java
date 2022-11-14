@@ -12,13 +12,16 @@ import java.util.Scanner;
 
 /**
  * The ClackClient class contains the following variables:
- * userName - String representing name of the client
- * hostName - String representing name of the computer representing the server
- * port - Integer representing port number on server connected to
- * closeConnection - boolean representing whether connection is closed or not
- * dataToSendToServer - ClackData object representing data sent to server
- * dataToReceiveFromServer - ClackData object representing data received from the server
- * inFromStd - Scanner object representing standard input
+ * <ul>
+ * <li>userName - String representing name of the client</li>
+ * <li>hostName - String representing name of the computer representing the server</li>
+ * <li>port - Integer representing port number on server connected to</li>
+ * <li>closeConnection - boolean representing whether connection is closed or not</li>
+ * <li>dataToSendToServer - ClackData object representing data sent to server</li>
+ * <li>dataToReceiveFromServer - ClackData object representing data received from the server</li>
+ * <li>inFromStd - Scanner object representing standard input</li>
+ * </ul>
+ * @author Iselda Aiello, Sydney DeCyllis
  */
 public class ClackClient{
   //default port number
@@ -37,7 +40,7 @@ public class ClackClient{
   private Socket local;
 
   /**
-   * Constructor for username, host name, and port, connection should be set to be open
+   * Constructor for username, host name, and port, connection should be set to be open <br>
    * Should set dataToSendToServer and dataToReceiveFromServer as null
    * @param userName sets the username of the user
    * @param hostName sets the hostname of the server
@@ -142,13 +145,13 @@ public class ClackClient{
   }
 
   /**
-   * Does not return anything
+   * Does not return anything<br>
    * For now it should have no code, just a declaration
    */
   public void sendClientData(){}
 
   /**
-   * Does not return anything
+   * Does not return anything<br>
    * For now it should have no code, just a declaration
    */
   public void sendData(){
@@ -163,7 +166,7 @@ public class ClackClient{
   }
 
   /**
-   * Does not return anything
+   * Does not return anything<br>
    * For now it should have no code, just a declaration
    */
   public void receiveData(){
@@ -212,6 +215,38 @@ public class ClackClient{
     return this.port;
   }
 
+  /**
+   * Initializes a ClackClient object and connects to a server
+   * @param args command line arguments
+   */
+  public static void main(String []args){
+    String parse;
+    ClackClient clackClient;
+    try {
+      if (args.length == 0) {
+        parse = "";
+        clackClient = new ClackClient();
+      } else {
+        parse = args[0];
+        if (parse.contains("@")) {
+          String[] title = parse.split("@");
+          parse = title[0];
+          if (title[1].contains(":")) {
+            title = title[1].split(":");
+            clackClient = new ClackClient(parse, title[0], Integer.parseInt(title[1]));
+          } else {
+            clackClient = new ClackClient(parse, title[1]);
+          }
+        } else {
+          clackClient = new ClackClient(parse);
+        }
+      }
+      clackClient.start();
+    } catch(NumberFormatException nfe){
+      System.err.println("Excepted type int after ':'");
+    }
+  }
+
   @Override
   public int hashCode(){
     return this.toString().hashCode();
@@ -236,35 +271,6 @@ public class ClackClient{
             "The hostname is: " + this.hostName + "\n" +
             "The port number is: " + this.port + "\n" +
             "The connection is " + connection;
-  }
-  public static void main(String []args){
-    String parse;
-    ClackClient clackClient;
-
-
-    if(args.length == 0){
-      parse = "";
-      clackClient = new ClackClient();
-    }
-    else {
-      parse = args[0];
-
-      if (parse.contains("@")) {
-        String[] title = parse.split("@");
-        parse = title[0];
-        if (title[1].contains(":")) {
-          title = title[1].split(":");
-          clackClient = new ClackClient(parse, title[0], Integer.parseInt(title[1]));
-
-        } else {
-          clackClient = new ClackClient(parse, title[0]);
-        }
-      }
-      else{
-        clackClient = new ClackClient(parse);
-      }
-    }
-    clackClient.start();
   }
 
 }

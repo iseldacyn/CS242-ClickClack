@@ -5,16 +5,18 @@ import data.MessageClackData;
 import data.FileClackData;
 import java.io.*;
 import java.net.*;
-import java.util.InputMismatchException;
 
 /**
  * The ClackServer class contains the following variables:
- * port - Integer representing port number on server connected to
- * closeConnection - boolean representing whether connection is closed or not
- * dataToReceiveFromClient - ClackData object representing data received from the client
- * dataToSendToClient - ClackData object representing data sent to the client
- * inFromClient - ObjectInputStream to receive information from client
- * outToClient - ObjectOutputStream to send information to client
+ * <ul>
+ * <li>port - Integer representing port number on server connected to</li>
+ * <li>closeConnection - boolean representing whether connection is closed or not</li>
+ * <li>dataToReceiveFromClient - ClackData object representing data received from the client</li>
+ * <li>dataToSendToClient - ClackData object representing data sent to the client</li>
+ * <li>inFromClient - ObjectInputStream to receive information from client</li>
+ * <li>outToClient - ObjectOutputStream to send information to client</li>
+ * </ul>
+ * @author Iselda Aiello
  */
 public class ClackServer{
   //default port number
@@ -28,8 +30,8 @@ public class ClackServer{
   private ObjectOutputStream outToClient;
 
   /**
-   * Constructor that sets port number
-   * Should set dataToReceiveFromClient and dataToSendToClient as null
+   * Constructor that sets port number<br>
+   * Should set dataToReceiveFromClient and dataToSendToClient as null<br>
    * inFromClient and outToClient also set to null
    * @param port sets the port to be connected to on the server
    */
@@ -119,6 +121,22 @@ public class ClackServer{
     return this.port;
   }
 
+  /**
+   * Initializes a ClackServer object and connects to a client
+   * @param args command line arguments
+   */
+  public static void main(String[] args){
+    ClackServer clackServer;
+    try{
+      if(args.length == 0)
+        clackServer = new ClackServer();
+      else clackServer = new ClackServer( Integer.parseInt(args[0]) );
+      clackServer.start();
+    } catch (NumberFormatException nfe){
+      System.err.println("Expected type int");
+    }
+  }
+
   @Override
   public int hashCode(){
     return this.toString().hashCode();
@@ -139,22 +157,6 @@ public class ClackServer{
     String connection = closeConnection ? "closed" : "open";
     return "The port number is: " + this.port + "\n" +
             "The connection is " + connection;
-  }
-
-  /**
-   * Initializes a ClackServer object and connects to a client
-   * @param args command line arguments
-   */
-  public static void main(String[] args){
-    ClackServer clackServer;
-    try{
-      if(args.length == 0)
-        clackServer = new ClackServer();
-      else clackServer = new ClackServer( Integer.parseInt(args[0]) );
-      clackServer.start();
-    } catch (InputMismatchException ime){
-      System.err.println("Expected type int");
-    }
   }
 
 }

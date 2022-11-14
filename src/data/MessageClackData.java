@@ -2,7 +2,9 @@ package data;
 
 /**
  * The class MessageClackData is a subclass of ClackData and contains the following variables:
- * message - String representing instant message
+ * <ul>
+ * <li>message - String representing instant message</li>
+ * </ul>
  * @author Iselda Aiello
  */
 public class MessageClackData extends ClackData{
