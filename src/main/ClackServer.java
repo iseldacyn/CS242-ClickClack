@@ -1,20 +1,16 @@
 package main;
 
-import data.ClackData;
-import data.MessageClackData;
-import data.FileClackData;
+import data.*;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 /**
  * The ClackServer class contains the following variables:
  * <ul>
  * <li>port - Integer representing port number on server connected to</li>
  * <li>closeConnection - boolean representing whether connection is closed or not</li>
- * <li>dataToReceiveFromClient - ClackData object representing data received from the client</li>
- * <li>dataToSendToClient - ClackData object representing data sent to the client</li>
- * <li>inFromClient - ObjectInputStream to receive information from client</li>
- * <li>outToClient - ObjectOutputStream to send information to client</li>
+ * <li>serverSideClientIOList  - an ArrayList consisting of ServerSideClientIO objects</li>
  * </ul>
  * @author Iselda Aiello
  */
@@ -24,15 +20,11 @@ public class ClackServer{
 
   private int port;
   private boolean closeConnection;
-  private ClackData dataToReceiveFromClient;
-  private ClackData dataToSendToClient;
-  private ObjectInputStream inFromClient;
-  private ObjectOutputStream outToClient;
+  private ArrayList<ServerSideClientIO> serverSideClientIOList;
 
   /**
    * Constructor that sets port number<br>
-   * Should set dataToReceiveFromClient and dataToSendToClient as null<br>
-   * inFromClient and outToClient also set to null
+   * Should set dataToReceiveFromClient and dataToSendToClient as null
    * @param port sets the port to be connected to on the server
    */
   public ClackServer(int port){
@@ -40,10 +32,7 @@ public class ClackServer{
       throw new IllegalArgumentException("Port number must be greater than 1024");
     this.port = port;
     this.closeConnection = false;
-    this.dataToReceiveFromClient = null;
-    this.dataToSendToClient = null;
-    this.inFromClient = null;
-    this.outToClient = null;
+    this.serverSideClientIOList = new ArrayList<>();
   }
 
   /**
@@ -54,24 +43,18 @@ public class ClackServer{
   }
 
   /**
-   * Does not return anything, gets connections from the client and echoes client data
+   * Does not return anything, creates and runs threads wrapped around ServerSideClientIO Runnable objects
    */
   public void start(){
     try {
-      ServerSocket sskt = new ServerSocket(this.port);
-      Socket clientskt = sskt.accept();
-      System.out.println("Connection Established!");
-      this.inFromClient = new ObjectInputStream( clientskt.getInputStream() );
-      this.outToClient = new ObjectOutputStream( clientskt.getOutputStream() );
-      while(!this.closeConnection){
-        receiveData();
-        this.dataToSendToClient = this.dataToReceiveFromClient;
-        sendData();
+      ServerSocket serverSocket = new ServerSocket(this.port);
+      while (!closeConnection) {
+        Socket newClientSocket = serverSocket.accept();
+        ServerSideClientIO newClient = new ServerSideClientIO(this, newClientSocket);
+        Thread thread = new Thread(newClient);
+        thread.start();
       }
-      this.inFromClient.close();
-      this.outToClient.close();
-      sskt.close();
-      clientskt.close();
+      serverSocket.close();
     } catch (UnknownHostException uhe){
       System.err.println("Unknown host.");
     } catch (NoRouteToHostException nrhe){
@@ -84,34 +67,19 @@ public class ClackServer{
   }
 
   /**
-   * Receives data from client, does not return anything
+   * Takes in ClackData object 'dataToBroadcastToClients’, and does not return anything.
    */
-  public void receiveData(){
-    try{
-      this.dataToReceiveFromClient = (ClackData)this.inFromClient.readObject();
-      System.out.println( this.dataToReceiveFromClient );
-      if( this.dataToReceiveFromClient.getData().equals("DONE") ) {
-        this.closeConnection = true;
-        System.out.println("Connection Closed!");
-      }
-    } catch (ClassNotFoundException cnfe) {
-      System.err.println("Class not found");
-    } catch(IOException ioe) {
-      this.closeConnection = true;
-      System.err.println("IO exception occurred" + ioe);
+  public synchronized void broadcast(ClackData dataToBroadcastToClients){
+    for(ServerSideClientIO client : serverSideClientIOList){
+      client.setDataToSendToClient(dataToBroadcastToClients);
+      client.sendData();
     }
   }
 
   /**
-   * Sends data to client, does not return anything
+   * Does not return anything, takes in a ServerSideClientIO object ‘serverSideClientToRemove’.
    */
-  public void sendData(){
-    try{
-      this.outToClient.writeObject( this.dataToSendToClient );
-    } catch(IOException ioe) {
-      System.err.println("IO exception occurred");
-    }
-  }
+  public synchronized void remove(ServerSideClientIO serverSideClientToRemove){ serverSideClientIOList.remove(serverSideClientToRemove); }
 
   /**
    * Returns the port
@@ -148,8 +116,7 @@ public class ClackServer{
     ClackServer otherClackServer = (ClackServer)other;
     return this.port == otherClackServer.port &&
             this.closeConnection == otherClackServer.closeConnection &&
-            this.dataToReceiveFromClient.equals(otherClackServer.dataToReceiveFromClient) &&
-            this.dataToSendToClient.equals(otherClackServer.dataToSendToClient);
+            this.serverSideClientIOList.equals(otherClackServer.serverSideClientIOList);
   }
 
   @Override
