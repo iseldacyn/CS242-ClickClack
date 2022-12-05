@@ -1,8 +1,6 @@
 package main;
 
-import data.ClackData;
-import data.FileClackData;
-import data.MessageClackData;
+import data.*;
 
 
 import java.io.*;
@@ -20,13 +18,15 @@ import java.util.Scanner;
  * <li>dataToSendToServer - ClackData object representing data sent to server</li>
  * <li>dataToReceiveFromServer - ClackData object representing data received from the server</li>
  * <li>inFromStd - Scanner object representing standard input</li>
+ * <li>inFromServer - ObjectInputStream to receive information from server</li>
+ * <li>outToServer - ObjectOutputStream to send information to server</li>
  * </ul>
  * @author Iselda Aiello, Sydney DeCyllis
  */
 public class ClackClient{
   //default port number
   final static int DEFAULT_PORT = 7000;
-  final static String key = "follow me @xxiaie on twitter.com";
+  final static String KEY = "follow me @xxiaie on twitter.com";
 
   private Scanner inFromStd;
   private String userName;
@@ -84,7 +84,7 @@ public class ClackClient{
   }
 
   /**
-   * Starts the connection, reads data from the client, and prints the data out.
+   * Does not return anything, but starts the connection from the client side
    */
   public void start(){
 
@@ -95,14 +95,14 @@ public class ClackClient{
       outToServer = new ObjectOutputStream(local.getOutputStream());
       inFromServer = new ObjectInputStream(local.getInputStream());
 
-      //Reads user input into inFromStd
+      ClientSideServerListener clientSideServerListener = new ClientSideServerListener(this);
+      Thread thread = new Thread(clientSideServerListener);
+      thread.start();
+
       this.inFromStd = new Scanner(System.in);
       while(!this.closeConnection){
         readClientData();
-        this.dataToReceiveFromServer = this.dataToSendToServer;
         sendData();
-        receiveData();
-        printData();
       }
       local.close();
       outToServer.close();
@@ -119,18 +119,18 @@ public class ClackClient{
   }
 
   /**
-   * Reads the data from the client
+   * Reads the data from the client, does not return anything
    */
   public void readClientData(){
     String userInput = this.inFromStd.next();
-    if(userInput.equals("DONE")){
+    if (userInput.equals("DONE")){
       this.closeConnection = true;
       this.dataToSendToServer = new MessageClackData(this.userName,userInput,ClackData.CONSTANT_SENDMESSAGE);
     } else if (userInput.equals("SENDFILE")) {
       String fileName = this.inFromStd.next();
       this.dataToSendToServer = new FileClackData(this.userName, fileName, ClackData.CONSTANT_SENDFILE);
       try{
-        ((FileClackData) this.dataToSendToServer).readFileContents(key);
+        ((FileClackData) this.dataToSendToServer).readFileContents(KEY);
       } catch(IOException ioe) {
         this.dataToSendToServer = null;
         System.err.println("Error reading the file");
@@ -139,19 +139,13 @@ public class ClackClient{
       System.err.println("Cannot test LISTUSERS");
       System.exit(0);
     } else {
-      this.dataToSendToServer = new MessageClackData(this.userName,userInput,key,ClackData.CONSTANT_SENDMESSAGE);
+      String message = userInput + this.inFromStd.nextLine();
+      this.dataToSendToServer = new MessageClackData(this.userName,message,KEY,ClackData.CONSTANT_SENDMESSAGE);
     }
   }
 
   /**
-   * Does not return anything<br>
-   * For now it should have no code, just a declaration
-   */
-  public void sendClientData(){}
-
-  /**
-   * Does not return anything<br>
-   * For now it should have no code, just a declaration
+   * Sends data to server, does not return anything
    */
   public void sendData(){
     try{
@@ -165,8 +159,7 @@ public class ClackClient{
   }
 
   /**
-   * Does not return anything<br>
-   * For now it should have no code, just a declaration
+   * Receives data from the server, does not return anything
    */
   public void receiveData(){
     try{
@@ -187,7 +180,7 @@ public class ClackClient{
   public void printData(){
     System.out.println("The username is: " + this.dataToReceiveFromServer.getUserName());
     System.out.println("The date is: " + this.dataToReceiveFromServer.getDate());
-    System.out.println("The data received is: \"" + this.dataToReceiveFromServer.getData(key) + "\"");
+    System.out.println("The data received is: \"" + this.dataToReceiveFromServer.getData(KEY) + "\"");
   }
 
   /**
@@ -215,6 +208,12 @@ public class ClackClient{
   }
 
   /**
+   * Returns the close connection variable
+   * @return whether the connection is closed
+   */
+  public boolean getCloseConnection() { return this.closeConnection; }
+
+  /**
    * Initializes a ClackClient object and connects to a server
    * @param args command line arguments
    */
@@ -223,7 +222,6 @@ public class ClackClient{
     ClackClient clackClient;
     try {
       if (args.length == 0) {
-        parse = "";
         clackClient = new ClackClient();
       } else {
         parse = args[0];
