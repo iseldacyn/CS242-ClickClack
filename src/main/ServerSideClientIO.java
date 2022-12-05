@@ -26,6 +26,11 @@ public class ServerSideClientIO implements Runnable{
   private ClackServer server;
   private Socket clientSocket;
 
+  /**
+   * Constructor that takes ClackServer object and Socket object as parameters
+   * @param server sets the ClackServer object to run
+   * @param clientSocket sets the Socket object of the client
+   */
   ServerSideClientIO(ClackServer server, Socket clientSocket){
     this.server = server;
     this.clientSocket = clientSocket;
