@@ -21,6 +21,7 @@ public class ClackServer{
   private int port;
   private boolean closeConnection;
   private ArrayList<ServerSideClientIO> serverSideClientIOList;
+  private ArrayList<String> userList;
 
   /**
    * Constructor that sets port number<br>
@@ -33,6 +34,7 @@ public class ClackServer{
     this.port = port;
     this.closeConnection = false;
     this.serverSideClientIOList = new ArrayList<>();
+    this.userList = new ArrayList<>();
   }
 
   /**
@@ -67,7 +69,8 @@ public class ClackServer{
   }
 
   /**
-   * Takes in ClackData object 'dataToBroadcastToClients’, and does not return anything.
+   * Takes in ClackData object 'dataToBroadcastToClients’, and does not return anything
+   * @param dataToBroadcastToClients data to send to all clients on server
    */
   public synchronized void broadcast(ClackData dataToBroadcastToClients){
     for(ServerSideClientIO client : serverSideClientIOList){
@@ -77,9 +80,41 @@ public class ClackServer{
   }
 
   /**
+   * Takes in ClackData object 'dataToBroadcastToClients’ and int 'clientPort', and does not return anything
+   * @param dataToBroadcastToClient data to send to specific client
+   * @param clientPort port of client to send data to
+   */
+  public synchronized void broadcastTo(ClackData dataToBroadcastToClient, int clientPort){
+    for(ServerSideClientIO client : serverSideClientIOList){
+      if( Integer.parseInt( dataToBroadcastToClient.getData() ) == clientPort){
+        dataToBroadcastToClient = new MessageClackData(dataToBroadcastToClient.getUserName(), getUserList(),
+                ClackData.CONSTANT_LISTUSERS);
+        client.setDataToSendToClient(dataToBroadcastToClient);
+        client.sendData();
+      }
+    }
+  }
+
+  /**
    * Does not return anything, takes in a ServerSideClientIO object ‘serverSideClientToRemove’.
+   * @param serverSideClientToRemove client to remove from server
    */
   public synchronized void remove(ServerSideClientIO serverSideClientToRemove){ serverSideClientIOList.remove(serverSideClientToRemove); }
+
+  /**
+   * Adds a user to the userList
+   * @param username username of user to add
+   */
+  public synchronized void addUser(String username){
+    if ( !this.userList.contains(username) )
+      this.userList.add(username);
+  }
+
+  /**
+   * Removes a user from the userList
+   * @param username username of user to remove
+   */
+  public synchronized void removeUser(String username){ this.userList.remove(username); }
 
   /**
    * Returns the port
@@ -87,6 +122,17 @@ public class ClackServer{
    */
   public int getPort(){
     return this.port;
+  }
+
+  /**
+   * Returns the list of users as a string
+   * @return list of users
+   */
+  public String getUserList() {
+    StringBuilder stringBuilder = new StringBuilder(20);
+    for(String user : userList)
+      stringBuilder.append(user).append('\n');
+    return "User List:\n" + stringBuilder;
   }
 
   /**

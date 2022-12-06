@@ -48,8 +48,14 @@ public class ServerSideClientIO implements Runnable{
       this.outToClient = new ObjectOutputStream(this.clientSocket.getOutputStream());
       while (!this.closeConnection) {
         receiveData();
-        this.server.broadcast(dataToReceiveFromClient);
-        sendData();
+        if(this.closeConnection)
+          break;
+        //doesn't send data when adding user
+        else if( this.dataToReceiveFromClient.getData().equals("init") )
+          continue;
+        if( this.dataToReceiveFromClient.getType() == ClackData.CONSTANT_LISTUSERS)
+          this.server.broadcastTo(dataToReceiveFromClient, clientSocket.getPort() );
+        else this.server.broadcast(dataToReceiveFromClient);
       }
       this.inFromClient.close();
       this.outToClient.close();
@@ -73,8 +79,13 @@ public class ServerSideClientIO implements Runnable{
       this.dataToReceiveFromClient = (ClackData)this.inFromClient.readObject();
       System.out.println( this.dataToReceiveFromClient );
       if( this.dataToReceiveFromClient.getData().equals("DONE") ) {
+        //remove user from server and close the connection
         this.closeConnection = true;
+        this.server.removeUser( this.dataToReceiveFromClient.getUserName() );
         this.server.remove(this);
+      } else if( this.dataToReceiveFromClient.getData().equals("init") ){
+        //adds new user to userList
+        this.server.addUser( this.dataToReceiveFromClient.getUserName() );
       }
     } catch (ClassNotFoundException cnfe) {
       System.err.println("Class not found");
