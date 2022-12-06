@@ -46,28 +46,31 @@ public class ServerSideClientIO implements Runnable{
     try {
       this.inFromClient = new ObjectInputStream(this.clientSocket.getInputStream());
       this.outToClient = new ObjectOutputStream(this.clientSocket.getOutputStream());
+      System.out.println("A connection was established!");
       while (!this.closeConnection) {
         receiveData();
         if(this.closeConnection)
           break;
         //doesn't send data when adding user
-        else if( this.dataToReceiveFromClient.getData().equals("init") )
+        else if( this.dataToReceiveFromClient.getData().equals("init") ){
           continue;
-        if( this.dataToReceiveFromClient.getType() == ClackData.CONSTANT_LISTUSERS)
-          this.server.broadcastTo(dataToReceiveFromClient, clientSocket.getPort() );
+        }
+        if( this.dataToReceiveFromClient.getType() == ClackData.CONSTANT_LISTUSERS) {
+          this.server.broadcastTo(dataToReceiveFromClient);
+        }
         else this.server.broadcast(dataToReceiveFromClient);
       }
       this.inFromClient.close();
       this.outToClient.close();
       this.clientSocket.close();
     } catch (UnknownHostException uhe) {
-      System.err.println("Unknown host.");
+      System.err.println("Unknown host: " + uhe.getMessage() );
     } catch (NoRouteToHostException nrhe) {
-      System.err.println("Server unreachable.");
+      System.err.println("Server unreachable: " + nrhe.getMessage() );
     } catch (ConnectException ce) {
-      System.err.println("Connection refused.");
+      System.err.println("Connection refused: " + ce.getMessage());
     } catch (IOException ioe) {
-      System.err.println("IO Exception occurred");
+      System.err.println("IO Exception occurred: " + ioe.getMessage());
     }
   }
 
@@ -77,10 +80,10 @@ public class ServerSideClientIO implements Runnable{
   public void receiveData(){
     try{
       this.dataToReceiveFromClient = (ClackData)this.inFromClient.readObject();
-      System.out.println( this.dataToReceiveFromClient );
-      if( this.dataToReceiveFromClient.getData().equals("DONE") ) {
+      if( this.dataToReceiveFromClient.getType() == ClackData.CONSTANT_LOGOUT ) {
         //remove user from server and close the connection
         this.closeConnection = true;
+        System.out.println("Connection Terminated");
         this.server.removeUser( this.dataToReceiveFromClient.getUserName() );
         this.server.remove(this);
       } else if( this.dataToReceiveFromClient.getData().equals("init") ){
@@ -88,10 +91,10 @@ public class ServerSideClientIO implements Runnable{
         this.server.addUser( this.dataToReceiveFromClient.getUserName() );
       }
     } catch (ClassNotFoundException cnfe) {
-      System.err.println("Class not found");
+      System.err.println("Class not found: " + cnfe.getMessage() );
     } catch(IOException ioe) {
       this.closeConnection = true;
-      System.err.println("IO exception occurred" + ioe);
+      System.err.println("IO exception occurred: " + ioe.getMessage() );
     }
   }
 
@@ -103,7 +106,7 @@ public class ServerSideClientIO implements Runnable{
     try{
       this.outToClient.writeObject( this.dataToSendToClient );
     } catch(IOException ioe) {
-      System.err.println("IO exception occurred");
+      System.err.println("IO exception occurred" + ioe.getMessage() );
     }
   }
 
@@ -111,5 +114,11 @@ public class ServerSideClientIO implements Runnable{
    * Mutator method to set the ClackData variable dataToSendToClient
    */
   public void setDataToSendToClient(ClackData dataToSendToClient){ this.dataToSendToClient = dataToSendToClient; }
+
+  /**
+   * Helper function for getting the data to one user in broadcastTo()
+   * @return data that was sent from the client
+   */
+  public ClackData getData(){ return dataToReceiveFromClient;}
 
 }

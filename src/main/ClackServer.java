@@ -53,18 +53,19 @@ public class ClackServer{
       while (!closeConnection) {
         Socket newClientSocket = serverSocket.accept();
         ServerSideClientIO newClient = new ServerSideClientIO(this, newClientSocket);
+        serverSideClientIOList.add(newClient);
         Thread thread = new Thread(newClient);
         thread.start();
       }
       serverSocket.close();
     } catch (UnknownHostException uhe){
-      System.err.println("Unknown host.");
+      System.err.println("Unknown host: " + uhe.getMessage() );
     } catch (NoRouteToHostException nrhe){
-      System.err.println("Server unreachable.");
+      System.err.println("Server unreachable: " + nrhe.getMessage() );
     } catch (ConnectException ce) {
-      System.err.println("Connection refused.");
+      System.err.println("Connection refused: " + ce.getMessage() );
     } catch(IOException ioe){
-      System.err.println("IO Exception occurred");
+      System.err.println("IO Exception occurred: " + ioe.getMessage() );
     }
   }
 
@@ -73,7 +74,7 @@ public class ClackServer{
    * @param dataToBroadcastToClients data to send to all clients on server
    */
   public synchronized void broadcast(ClackData dataToBroadcastToClients){
-    for(ServerSideClientIO client : serverSideClientIOList){
+    for (ServerSideClientIO client : serverSideClientIOList) {
       client.setDataToSendToClient(dataToBroadcastToClients);
       client.sendData();
     }
@@ -82,15 +83,15 @@ public class ClackServer{
   /**
    * Takes in ClackData object 'dataToBroadcastToClients’ and int 'clientPort', and does not return anything
    * @param dataToBroadcastToClient data to send to specific client
-   * @param clientPort port of client to send data to
    */
-  public synchronized void broadcastTo(ClackData dataToBroadcastToClient, int clientPort){
+  public synchronized void broadcastTo(ClackData dataToBroadcastToClient){
     for(ServerSideClientIO client : serverSideClientIOList){
-      if( Integer.parseInt( dataToBroadcastToClient.getData() ) == clientPort){
+      if( dataToBroadcastToClient.equals( client.getData() ) ){
         dataToBroadcastToClient = new MessageClackData(dataToBroadcastToClient.getUserName(), getUserList(),
                 ClackData.CONSTANT_LISTUSERS);
         client.setDataToSendToClient(dataToBroadcastToClient);
         client.sendData();
+        break;
       }
     }
   }
@@ -99,15 +100,16 @@ public class ClackServer{
    * Does not return anything, takes in a ServerSideClientIO object ‘serverSideClientToRemove’.
    * @param serverSideClientToRemove client to remove from server
    */
-  public synchronized void remove(ServerSideClientIO serverSideClientToRemove){ serverSideClientIOList.remove(serverSideClientToRemove); }
+  public synchronized void remove(ServerSideClientIO serverSideClientToRemove){
+    serverSideClientIOList.remove(serverSideClientToRemove);
+  }
 
   /**
    * Adds a user to the userList
    * @param username username of user to add
    */
   public synchronized void addUser(String username){
-    if ( !this.userList.contains(username) )
-      this.userList.add(username);
+    this.userList.add(username);
   }
 
   /**
@@ -132,6 +134,7 @@ public class ClackServer{
     StringBuilder stringBuilder = new StringBuilder(20);
     for(String user : userList)
       stringBuilder.append(user).append('\n');
+    stringBuilder.deleteCharAt(stringBuilder.length()-1);
     return "User List:\n" + stringBuilder;
   }
 
@@ -147,7 +150,7 @@ public class ClackServer{
       else clackServer = new ClackServer( Integer.parseInt(args[0]) );
       clackServer.start();
     } catch (NumberFormatException nfe){
-      System.err.println("Expected type int");
+      System.err.println("Expected type int: " + nfe.getMessage() );
     }
   }
 

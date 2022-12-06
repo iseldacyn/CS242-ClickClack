@@ -8,7 +8,7 @@ package main;
  * @author Sydney DeCyllis, Iselda Aiello
  */
 public class ClientSideServerListener implements Runnable {
-  ClackClient client;
+  private ClackClient client;
 
   /**
    * Constructor that takes in a ClackClient object ‘client’ as a parameter.
@@ -20,6 +20,7 @@ public class ClientSideServerListener implements Runnable {
   public void run(){
     while( !client.getCloseConnection() ){
       client.receiveData();
+      if(client.getCloseConnection()) return;
       client.printData();
     }
   }

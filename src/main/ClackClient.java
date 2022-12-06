@@ -107,18 +107,17 @@ public class ClackClient{
       this.inFromStd = new Scanner(System.in);
       while(!this.closeConnection){
         readClientData();
+        if(!this.closeConnection) thread.interrupt();
         sendData();
       }
       local.close();
       outToServer.close();
       inFromServer.close();
       inFromStd.close();
-    }
-    catch(UnknownHostException uhe){
-      System.out.println("Unknown host Exception");
-    }
-    catch(IOException ioe){
-      System.out.println("IOException");
+    } catch(UnknownHostException uhe){
+      System.out.println("Unknown host Exception: " + uhe.getMessage());
+    } catch(IOException ioe){
+      System.out.println("IOException: " + ioe.getMessage() );
     }
     //this.inFromStd.close();
   }
@@ -130,7 +129,7 @@ public class ClackClient{
     String userInput = this.inFromStd.next();
     if (userInput.equals("DONE")){
       this.closeConnection = true;
-      this.dataToSendToServer = new MessageClackData(this.userName,userInput,ClackData.CONSTANT_LOGOUT);
+      this.dataToSendToServer = new MessageClackData(this.userName,userInput,KEY,ClackData.CONSTANT_LOGOUT);
     } else if (userInput.equals("SENDFILE")) {
       String fileName = this.inFromStd.next();
       this.dataToSendToServer = new FileClackData(this.userName, fileName, ClackData.CONSTANT_SENDFILE);
@@ -138,10 +137,10 @@ public class ClackClient{
         ((FileClackData) this.dataToSendToServer).readFileContents(KEY);
       } catch(IOException ioe) {
         this.dataToSendToServer = null;
-        System.err.println("Error reading the file");
+        System.err.println("Error reading the file: " + ioe.getMessage() );
       }
     } else if (userInput.equals("LISTUSERS")){
-      this.dataToSendToServer = new MessageClackData(this.userName, String.valueOf(this.port), ClackData.CONSTANT_LISTUSERS);
+      this.dataToSendToServer = new MessageClackData(this.userName, "", ClackData.CONSTANT_LISTUSERS);
     } else {
       String message = userInput + this.inFromStd.nextLine();
       this.dataToSendToServer = new MessageClackData(this.userName,message,KEY,ClackData.CONSTANT_SENDMESSAGE);
@@ -170,10 +169,10 @@ public class ClackClient{
       dataToReceiveFromServer = (ClackData) inFromServer.readObject();
     }
     catch(ClassNotFoundException cfe){
-      System.err.println("Class could not be found");
+      System.err.println("Class could not be found: " + cfe.getMessage() );
     }
     catch(IOException ioe){
-      System.err.println("ObjectInputStream Exception");
+      System.err.println("ObjectInputStream Exception: " + ioe.getMessage() );
     }
 
   }
@@ -185,11 +184,11 @@ public class ClackClient{
     //only prints user list
     if(this.dataToReceiveFromServer.getType() == ClackData.CONSTANT_LISTUSERS){
       System.out.println( this.dataToReceiveFromServer.getData() );
-      return;
+    } else {
+      System.out.println("User: " + this.dataToReceiveFromServer.getUserName());
+      System.out.println("Date: " + this.dataToReceiveFromServer.getDate());
+      System.out.println("Data: " + this.dataToReceiveFromServer.getData(KEY) );
     }
-    System.out.println("The username is: " + this.dataToReceiveFromServer.getUserName());
-    System.out.println("The date is: " + this.dataToReceiveFromServer.getDate());
-    System.out.println("The data received is: \"" + this.dataToReceiveFromServer.getData(KEY) + "\"");
   }
 
   /**
